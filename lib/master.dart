@@ -5,9 +5,18 @@ class Master extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('ToDo List'),
+      ),
+      body: const Center(
         child: Text('Hello World!'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          //Add my callback function here
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
