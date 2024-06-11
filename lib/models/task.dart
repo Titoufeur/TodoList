@@ -8,8 +8,10 @@ class Task{
   bool completed;
   String? title;
 
-  Task({ required this.content, String? pTitle, String? pid}):completed=false,id=uuid.v4(){
+  Task({ required this.content, String? pTitle, String? pid, bool? pcompleted}):completed=false,id=uuid.v4(){
     id= pid ??id;
+    title = pTitle;
+    completed = pcompleted ?? completed;
   }
 
   @override
