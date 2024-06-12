@@ -1,19 +1,39 @@
 import 'package:uuid/uuid.dart';
+import 'tag.dart';
 
-var uuid = const Uuid();
+var uuid = Uuid();
 
-class Task{
-  String? id;
+enum Priority { low, normal, high }
+
+class Task {
+  String id;
+  String userId;
   String content;
+  List<Tag> tags;
   bool completed;
-  String? title;
+  DateTime createdAt;
+  DateTime updatedAt;
+  DateTime dueDate;
+  Priority priority;
 
-  Task({ required this.content, String? pTitle, String? pid}):completed=false,id=uuid.v4(){
-    id= pid ??id;
-  }
+  Task({
+    String? id,
+    required this.userId,
+    required this.content,
+    List<Tag>? tags,
+    this.completed = false,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? dueDate,
+    this.priority = Priority.normal,
+  })  : id = id ?? uuid.v4(),
+        tags = tags ?? [],
+        createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now(),
+        dueDate = dueDate ?? DateTime.now().add(Duration(days: 7));
 
   @override
   String toString() {
-    return "Task(content:$content, id:$id)";
+    return 'Task(id: $id, content: $content, completed: $completed, priority: $priority, tags: ${tags.length})';
   }
 }
