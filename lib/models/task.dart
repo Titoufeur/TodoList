@@ -1,7 +1,7 @@
 import 'package:uuid/uuid.dart';
 import 'tag.dart';
 
-var uuid = Uuid();
+var uuid = const Uuid();
 
 enum Priority { low, normal, high }
 
@@ -18,7 +18,7 @@ class Task {
 
   Task({
     String? id,
-    required this.userId,
+    String? userId,
     required this.content,
     List<Tag>? tags,
     this.completed = false,
@@ -27,10 +27,11 @@ class Task {
     DateTime? dueDate,
     this.priority = Priority.normal,
   })  : id = id ?? uuid.v4(),
+        userId = userId ?? uuid.v4(),
         tags = tags ?? [],
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now(),
-        dueDate = dueDate ?? DateTime.now().add(Duration(days: 7));
+        dueDate = dueDate ?? DateTime.now().add(const Duration(days: 7));
 
   @override
   String toString() {
