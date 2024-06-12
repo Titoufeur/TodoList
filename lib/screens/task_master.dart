@@ -10,6 +10,7 @@ class TaskMaster extends StatefulWidget {
 }
 
 class _TaskMasterState extends State<TaskMaster> {
+
   Future<List<Task>> _fetchTasks() async {
     await Future.delayed(const Duration(seconds: 2));
 
