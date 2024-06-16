@@ -6,7 +6,7 @@ class TaskService {
   Future<List<Task>> fetchTasks() async {
 
     final faker = Faker();
-    List<Task> tasks = List.generate(100, (index) {
+    List<Task> tasks = List.generate(10, (index) {
       return Task(
         id: faker.guid.guid(),
         content: faker.lorem.sentence(),
@@ -15,5 +15,10 @@ class TaskService {
     });
 
     return tasks;
+  }
+
+  Future<void> createTask(Task newTask) async {
+    List<Task> tasks = await fetchTasks();
+    tasks.add(newTask);
   }
 }

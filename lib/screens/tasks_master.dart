@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/screens/task_form.dart';
 import '../models/task.dart';
 import '../services/task_service.dart';
 import '../widgets/task_preview.dart';
@@ -52,6 +53,15 @@ class _TasksMasterState extends State<TasksMaster> {
             );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const TaskForm()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
