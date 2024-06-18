@@ -14,26 +14,17 @@ class _TaskFormState extends State<TaskForm> {
   final _contentController = TextEditingController();
   bool _completed = false;
 
-  @override
-  void dispose() {
-    _contentController.dispose();
-    super.dispose();
-  }
-
-  void _submitForm() async {
+  void _submitForm() async {//Méthode appelée lorsqu'on submit le form
     if (_formKey.currentState!.validate()) {
-      Task newTask = Task(
+      Task newTask = Task(//Crée une tache avec les informations fournies
         content: _contentController.text,
         completed: _completed,
       );
 
-      await TaskService().createTask(newTask);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Task created successfully')),
       );
-
-      Navigator.pop(context);
+      Navigator.of(context).pop(newTask);
     }
   }
 

@@ -13,12 +13,20 @@ class TasksMaster extends StatefulWidget {
 }
 
 class _TasksMasterState extends State<TasksMaster> {
+  final TaskService _taskService = TaskService();
   late Future<List<Task>> futureTasks;
 
   @override
-  void initState() {
+  void initState() {//Initialise la liste de taches futureTasks en appelant la méthode fetchTasks()
     super.initState();
-    futureTasks = TaskService().fetchTasks();
+    futureTasks = _taskService.fetchTasks();
+  }
+
+  void _addTask(Task taskData) {//Ajoute une tâche à taskService, puis refresh sa liste de tâches en rappelant fetchTasks
+    _taskService.createTask(taskData);
+    setState(() {
+      futureTasks = _taskService.fetchTasks();
+    });
   }
 
   @override
@@ -59,7 +67,11 @@ class _TasksMasterState extends State<TasksMaster> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const TaskForm()),
-          );
+          ).then((newTask) {//Attends que l'utilisateur revienne sur la page en recevant l'objet newTask renvoyé par Navigator
+            if (newTask != null) {
+              _addTask(newTask);//Et ensuite ajoute la tache si elle existe
+            }
+          });
         },
         child: const Icon(Icons.add),
       ),
