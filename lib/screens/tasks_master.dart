@@ -1,33 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/screens/task_form.dart';
-import '../models/task.dart';
-import '../services/task_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/tasks_provider.dart';
 import '../widgets/task_preview.dart';
 import 'task_details.dart';
+import 'task_form.dart';
 
-class TasksMaster extends StatefulWidget {
-  const TasksMaster({super.key});
-
-  @override
-  _TasksMasterState createState() => _TasksMasterState();
-}
-
-class _TasksMasterState extends State<TasksMaster> {
-  final TaskService _taskService = TaskService();
-  late Future<List<Task>> futureTasks;
-
-  @override
-  void initState() {//Initialise la liste de taches futureTasks en appelant la méthode fetchTasks()
-    super.initState();
-    futureTasks = _taskService.fetchTasks();
-  }
-
-  void _addTask(Task taskData) {//Ajoute une tâche à taskService, puis refresh sa liste de tâches en rappelant fetchTasks
-    _taskService.createTask(taskData);
-    setState(() {
-      futureTasks = _taskService.fetchTasks();
-    });
-  }
+class TasksMaster extends StatelessWidget {
+  const TasksMaster({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,43 +14,47 @@ class _TasksMasterState extends State<TasksMaster> {
       appBar: AppBar(
         title: const Text('Todo List'),
       ),
-      body: FutureBuilder<List<Task>>(
-        future: futureTasks,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No tasks available'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                Task task = snapshot.data![index];
-                return TaskPreview(task: task, onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TaskDetails(task: task),
-                    ),
-                  );
-                });
-              },
-            );
-          }
+      body: Consumer<TasksProvider>(
+        builder: (context, tasksProvider, child) {
+          return FutureBuilder(
+            future: tasksProvider.fetchTasks(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return ListView.builder(
+                  itemCount: tasksProvider.tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = tasksProvider.tasks[index];
+                    return TaskPreview(
+                      task: task,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TaskDetails(task: task),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              }
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final newTask = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const TaskForm()),
-          ).then((newTask) {//Attends que l'utilisateur revienne sur la page en recevant l'objet newTask renvoyé par Navigator
-            if (newTask != null) {
-              _addTask(newTask);//Et ensuite ajoute la tache si elle existe
-            }
-          });
+            MaterialPageRoute(builder: (context) => TaskForm()),
+          );
+          if (newTask != null) {
+            Provider.of<TasksProvider>(context, listen: false).addTask(newTask);
+          }
         },
         child: const Icon(Icons.add),
       ),

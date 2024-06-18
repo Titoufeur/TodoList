@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/todo_list_app.dart';
-import 'main_app.dart';
+import 'package:provider/provider.dart';
+import 'todo_list_app.dart';
+import 'providers/tasks_provider.dart';
 
 void main() {
-  runApp(const ToDoListApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TasksProvider(),
+      child: const ToDoListApp(),
+    ),
+  );
 }

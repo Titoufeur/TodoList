@@ -28,4 +28,15 @@ class TaskService {
   Future<void> createTask(Task newTask) async {
     _tasks.add(newTask);
   }
+
+  void removeTask(Task task) {
+    _tasks.remove(task);
+  }
+
+  void updateTask(Task updatedTask) {
+    var index = _tasks.indexWhere((t) => t.id == updatedTask.id);
+    if (index != -1) {
+      _tasks[index] = updatedTask;
+    }
+  }
 }
