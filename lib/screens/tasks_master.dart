@@ -47,14 +47,15 @@ class TasksMaster extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final newTask = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TaskForm()),
-          );
-          if (newTask != null) {
-            Provider.of<TasksProvider>(context, listen: false).addTask(newTask);
-          }
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => TaskForm(formMode: FormMode.Add),
+          ).then((newTask) {
+            if (newTask != null) {
+              Provider.of<TasksProvider>(context, listen: false).addTask(newTask);
+            }
+          });
         },
         child: const Icon(Icons.add),
       ),

@@ -1,70 +1,59 @@
 import 'package:flutter/material.dart';
 import '../models/task.dart';
-import '../services/task_service.dart';
 
-class TaskForm extends StatefulWidget {
-  const TaskForm({super.key});
+enum FormMode { Add, Edit }
 
-  @override
-  _TaskFormState createState() => _TaskFormState();
-}
+class TaskForm extends StatelessWidget {
+  final FormMode formMode;
+  final Task? task;
 
-class _TaskFormState extends State<TaskForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _contentController = TextEditingController();
-  bool _completed = false;
-
-  void _submitForm() async {//Méthode appelée lorsqu'on submit le form
-    if (_formKey.currentState!.validate()) {
-      Task newTask = Task(//Crée une tache avec les informations fournies
-        content: _contentController.text,
-        completed: _completed,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Task created successfully')),
-      );
-      Navigator.of(context).pop(newTask);
-    }
-  }
+  const TaskForm({Key? key, required this.formMode, this.task}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Task'),
-      ),
-      body: Padding(
+    final TextEditingController contentController =
+    TextEditingController(text: task?.content ?? '');
+
+    return Dialog(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _contentController,
-                decoration: const InputDecoration(labelText: 'Content'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some content';
-                  }
-                  return null;
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Completed'),
-                value: _completed,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _completed = value!;
-                  });
-                },
-              ),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text('Create Task'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              formMode == FormMode.Add ? 'Ajouter une tâche' : 'Modifier la tâche',
+            ),
+            const SizedBox(height: 20.0),
+            TextField(
+              controller: contentController,
+              decoration: const InputDecoration(labelText: 'Contenu de la tâche'),
+            ),
+            if (formMode == FormMode.Edit) ...[
+              const SizedBox(height: 20.0),
+              Row(
+                children: [
+                  const Text('Complétée: '),
+                  Checkbox(
+                    value: task?.completed ?? false,
+                    onChanged: (value) {
+                      // Implement task completion toggle logic if needed
+                    },
+                  ),
+                ],
               ),
             ],
-          ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                // Handle form submission
+                Task editedTask = task ?? Task(content: ''); // Initialize a new task if null
+                editedTask.content = contentController.text;
+                Navigator.of(context).pop(editedTask);
+              },
+              child: Text(formMode == FormMode.Add ? 'Ajouter' : 'Enregistrer'),
+            ),
+          ],
         ),
       ),
     );

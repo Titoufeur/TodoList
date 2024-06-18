@@ -28,6 +28,15 @@ class TasksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void editTask(Task editedTask) {
+    _taskService.updateTask(editedTask);
+    int index = _tasks.indexWhere((task) => task.id == editedTask.id);
+    if (index != -1) {
+      _tasks[index] = editedTask;
+      notifyListeners();
+    }
+  }
+
   Task getTaskById(String id) {
     return _tasks.firstWhere((task) => task.id == id);
   }

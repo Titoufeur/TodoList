@@ -1,66 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/task.dart';
+import '../providers/tasks_provider.dart';
+import '../screens/task_form.dart';
 
-class TaskDetails extends StatefulWidget {
+class TaskDetails extends StatelessWidget {
   final Task task;
 
-  const TaskDetails({required this.task, super.key});
-
-  @override
-  _TaskDetailsState createState() => _TaskDetailsState();
-}
-
-class _TaskDetailsState extends State<TaskDetails> {
-  late TextEditingController contentController;
-
-  @override
-  void initState() {
-    super.initState();
-    contentController = TextEditingController(text: widget.task.content);
-  }
-
-  @override
-  void dispose() {
-    contentController.dispose();
-    super.dispose();
-  }
+  const TaskDetails({Key? key, required this.task}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Details'),
+        title: const Text('Détails de la tâche'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(labelText: 'Content'),
-              readOnly: true,
-            ),
-            const SizedBox(height: 16.0),
+            Text('ID de la tâche: ${task.id}'),
+            const SizedBox(height: 8.0),
+            Text('Contenu: ${task.content}'),
+            const SizedBox(height: 8.0),
             Row(
               children: [
-                const Text('Completed: '),
+                Text('Complétée: '),
                 Icon(
-                  widget.task.completed ? Icons.check_circle : Icons.circle,
-                  color: widget.task.completed ? Colors.green : Colors.red,
+                  task.completed ? Icons.check_circle : Icons.circle,
+                  color: task.completed ? Colors.green : Colors.red,
                 ),
               ],
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
+                _editTask(context);
+              },
+              child: const Text('Modifier la tâche'),
+            ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Go back'),
+              child: const Text('Retour'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _editTask(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => TaskForm(formMode: FormMode.Edit, task: task),
+    ).then((editedTask) {
+      if (editedTask != null) {
+        Provider.of<TasksProvider>(context, listen: false).editTask(editedTask);
+      }
+    });
   }
 }
