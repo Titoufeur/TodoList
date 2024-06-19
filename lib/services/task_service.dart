@@ -21,7 +21,7 @@ class TaskService {
 
   List<Task> get tasks => _tasks;
 
-  Future<List<Task>> fetchTasks() async {
+  List<Task> fetchTasks() {
     return tasks;
   }
 
@@ -38,5 +38,9 @@ class TaskService {
     if (index != -1) {
       _tasks[index] = updatedTask;
     }
+  }
+
+  Task getTaskById(String id) {
+    return _tasks.firstWhere((task) => task.id == id);
   }
 }

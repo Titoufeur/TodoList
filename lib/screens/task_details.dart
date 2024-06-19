@@ -1,65 +1,23 @@
 import 'package:flutter/material.dart';
+import 'task_form.dart';
 import '../models/task.dart';
 
-class TaskDetails extends StatefulWidget {
-  final Task task;
+class TaskDetails extends StatelessWidget {
+  final FormMode formMode;
+  final Task? task;
 
-  const TaskDetails({required this.task, super.key});
-
-  @override
-  _TaskDetailsState createState() => _TaskDetailsState();
-}
-
-class _TaskDetailsState extends State<TaskDetails> {
-  late TextEditingController contentController;
-
-  @override
-  void initState() {
-    super.initState();
-    contentController = TextEditingController(text: widget.task.content);
-  }
-
-  @override
-  void dispose() {
-    contentController.dispose();
-    super.dispose();
-  }
-
+  const TaskDetails({Key? key, required this.formMode, this.task}) : super(key: key);
+//Widget utilisé pour afficher les détails d'une tache afin de les modifier, ou alors pour ajouter une nouvelle tache.
+  //Il affiche TaskForm, en lui disant dans quel mode il doit s'afficher : add ou edit.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Details'),
+        title: Text(formMode == FormMode.add ? 'Ajouter une tâche' : 'Modifier une tâche'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(labelText: 'Content'),
-              readOnly: true,
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              children: [
-                const Text('Completed: '),
-                Icon(
-                  widget.task.completed ? Icons.check_circle : Icons.circle,
-                  color: widget.task.completed ? Colors.green : Colors.red,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go back'),
-            ),
-          ],
-        ),
+        child: TaskForm(formMode: formMode, task: task),
       ),
     );
   }
