@@ -10,7 +10,6 @@ class TasksProvider extends ChangeNotifier {
   Future<void> fetchTasks() async {
     try {
       _tasks = await _taskService.fetchTasks();
-      print('Tasks in provider: $_tasks');
       notifyListeners();
     } catch (e) {
       print('Failed to fetch tasks: $e');
