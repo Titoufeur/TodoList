@@ -14,7 +14,6 @@ class Master extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          //Add my callback function here
         },
         child: const Icon(Icons.add),
       ),

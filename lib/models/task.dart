@@ -1,39 +1,49 @@
-import 'package:uuid/uuid.dart';
-import 'tag.dart';
+import 'package:todolist/models/user.dart';
 
-var uuid = Uuid();
-
-enum Priority { low, normal, high }
+enum Priority { basse, normale, haute }
 
 class Task {
-  String id;
-  String userId;
-  String content;
-  List<Tag> tags;
-  bool completed;
-  DateTime createdAt;
-  DateTime updatedAt;
-  DateTime dueDate;
-  Priority priority;
+  final String id;
+  final String userId;
+  final String content;
+  final DateTime dueDate;
+  final Priority priority;
+  late bool completed;
 
   Task({
     String? id,
-    required this.userId,
+    String? user_id,
     required this.content,
-    List<Tag>? tags,
+    required this.dueDate,
+    required this.priority,
     this.completed = false,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    DateTime? dueDate,
-    this.priority = Priority.normal,
   })  : id = id ?? uuid.v4(),
-        tags = tags ?? [],
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now(),
-        dueDate = dueDate ?? DateTime.now().add(Duration(days: 7));
+        userId = user_id ?? uuid.v4();
+
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      id: json['id'] as String,
+      user_id: json['user_id'] as String,
+      content: json['content'] as String,
+      dueDate: DateTime.parse(json['dueDate'] as String),
+      priority: Priority.values.firstWhere((e) => e.toString().split('.').last == json['priority']),
+      completed: json['completed'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'content': content,
+      'priority': priority.toString().split('.').last,
+      'dueDate': dueDate.toIso8601String(),
+      'completed': completed,
+    };
+  }
 
   @override
   String toString() {
-    return 'Task(id: $id, content: $content, completed: $completed, priority: $priority, tags: ${tags.length})';
+    return 'Task(id: $id, content: $content, completed: $completed, priority: $priority';
   }
 }
