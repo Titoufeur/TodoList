@@ -18,7 +18,6 @@ class TaskService {
   );
   final faker = Faker();
   final uuid = const Uuid();
-  List<Task> _tasks = [];
   final String baseUrl = dotenv.env['SUPABASE_URL']!;
   final String apiKey = dotenv.env['SUPABASE_ANON_KEY']!;
 
@@ -28,8 +27,6 @@ class TaskService {
     _dio.options.headers['apikey'] = apiKey;
   }
 
-  List<Task> get tasks => _tasks;
-
   Future<List<Task>> fetchTasks() async {
     try {
       final response = await _dio.get('/rest/v1/tasks');
@@ -37,74 +34,57 @@ class TaskService {
         List<Task> tasks = (response.data as List)
             .map((json) => Task.fromJson(json))
             .toList();
-        _tasks = tasks;
         return tasks;
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception('Erreur lors du fetchTasks');
       }
     } catch (e) {
-      print('Error fetching tasks: $e');
+      print('Erreur lors du fetch des tâches: $e');
       throw e;
     }
   }
 
-
-
-
-  Future<void> createTask(Task newTask) async {
+  Future<bool> createTask(Task newTask) async {
     try {
-      final response = await _dio.post('/rest/v1/tasks', data: newTask.toJson());
-
-      if (response.statusCode == 201) {
-        _tasks.add(Task.fromJson(response.data));
-      } else {
-        throw Exception('Failed to create task');
-      }
+      print(newTask);
+      await _dio.post('/rest/v1/tasks', data: newTask.toJson());
+      return true;
     } catch (error) {
-      print('Error creating task: $error');
+      print('Erreur lors de la création de la tâche: $error');
       rethrow;
     }
   }
 
-  Future<void> removeTask(Task task) async {
+  Future<bool> removeTask(Task task) async {
     try {
-      final response = await _dio.delete('/rest/v1/tasks?id=eq.${task.id}');
-
-      if (response.statusCode == 200) {
-        _tasks.removeWhere((t) => t.id == task.id);
-      } else {
-        throw Exception('Failed to delete task');
-      }
+      await _dio.delete('/rest/v1/tasks?id=eq.${task.id}');
+      return true;
     } catch (error) {
-      print('Error deleting task: $error');
+      print('Erreur lors de la suppression de la tache: $error');
       rethrow;
     }
   }
 
-  Future<void> updateTask(Task updatedTask) async {
+  Future<bool> updateTask(Task updatedTask) async {
     try {
-      final response = await _dio.patch('/rest/v1/tasks?id=eq.${updatedTask.id}', data: updatedTask.toJson());
-
-      if (response.statusCode == 200) {
-        var index = _tasks.indexWhere((t) => t.id == updatedTask.id);
-        if (index != -1) {
-          _tasks[index] = Task.fromJson(response.data);
-        }
-      } else {
-        throw Exception('Failed to update task');
-      }
+      await _dio.patch('/rest/v1/tasks?id=eq.${updatedTask.id}', data: updatedTask.toJson());
+      return true;
     } catch (error) {
-      print('Error updating task: $error');
+      print('Erreur de taskService lors de la modif de la tache : $error');
       rethrow;
     }
   }
 
-  Future<void> toggleTaskCompletion(Task task) async {
-    task.completed = !task.completed;
-    await updateTask(task);
-  }
-
-  Task getTaskById(String id) {
-    return _tasks.firstWhere((task) => task.id == id);
+  Future<bool> toggleTaskCompletion(Task task) async {
+    try {
+      await _dio.patch(
+        '/rest/v1/tasks?id=eq.${task.id}',
+        data: {'completed': !task.completed},
+      );
+      return true;
+    } catch (error) {
+      print('Erreur lors de la complétion de la tâche: $error');
+      rethrow;
+    }
   }
 }

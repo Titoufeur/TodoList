@@ -13,20 +13,20 @@ class TaskPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color? backgroundColor;
-
+    //Affiche le bg de la tâche différemment en fonction de son niveau de priorité
     if (!task.completed) {
       switch (task.priority) {
         case Priority.haute:
-          backgroundColor = Colors.orange;
+          backgroundColor = Colors.orange[300];
           break;
         case Priority.normale:
-          backgroundColor = Colors.yellow;
+          backgroundColor = Colors.yellow[300];
           break;
         case Priority.basse:
-          backgroundColor = Colors.blue;
+          backgroundColor = Colors.blue[300];
           break;
         default:
-          backgroundColor = Colors.grey;
+          backgroundColor = Colors.grey[300];
           break;
       }
     }

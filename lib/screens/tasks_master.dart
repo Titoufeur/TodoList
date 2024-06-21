@@ -52,6 +52,7 @@ class _TasksMasterState extends State<TasksMaster> {
                             return Dialog(
                               child: Padding(
                                 padding: EdgeInsets.all(16.0),
+                                //Affiche le formulaire en mode édition
                                 child: TaskDetails(task: task, formMode: FormMode.edit,),
                               ),
                             );
@@ -79,15 +80,12 @@ class _TasksMasterState extends State<TasksMaster> {
               return Dialog(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
+                  //Ici, ajoute le formulaire en mode ajout.
                   child: TaskForm(formMode: FormMode.add),
                 ),
               );
             },
-          ).then((newTask) {
-            if (newTask != null) {
-              Provider.of<TasksProvider>(context, listen: false).addTask(newTask);
-            }
-          });
+          );
         },
         child: const Icon(Icons.add),
       ),
