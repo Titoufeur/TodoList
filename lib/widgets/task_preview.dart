@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/task.dart';
 import '../providers/tasks_provider.dart';
 
@@ -13,7 +14,7 @@ class TaskPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     Color? backgroundColor;
 
-    if (!task.completed){
+    if (!task.completed) {
       switch (task.priority) {
         case Priority.haute:
           backgroundColor = Colors.orange;
@@ -29,7 +30,6 @@ class TaskPreview extends StatelessWidget {
           break;
       }
     }
-
 
     return Consumer<TasksProvider>(
       builder: (context, tasksProvider, child) {

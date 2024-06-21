@@ -1,41 +1,46 @@
-import 'package:uuid/uuid.dart';
-import 'tag.dart';
-
-var uuid = const Uuid();
-
 enum Priority { basse, normale, haute }
 
 class Task {
-  String id;
-  String userId;
-  String content;
-  List<Tag> tags;
-  bool completed;
-  DateTime createdAt;
-  DateTime updatedAt;
-  DateTime dueDate;
-  Priority priority;
+  final String id;
+  final String userId;
+  final String content;
+  final DateTime dueDate;
+  final Priority priority;
+  late final bool completed;
 
   Task({
-    String? id,
-    String? userId,
+    required this.id,
+    required this.userId,
     required this.content,
-    List<Tag>? tags,
+    required this.dueDate,
+    required this.priority,
     this.completed = false,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    DateTime? dueDate,
-    this.priority = Priority.normale,
-  })  : id = id ?? uuid.v4(),
-        userId = userId ?? uuid.v4(),
-        tags = tags ?? [],
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now(),
-        dueDate = dueDate ?? DateTime.now().add(const Duration(days: 7));
+  });
 
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      content: json['content'] as String,
+      dueDate: DateTime.parse(json['dueDate'] as String),
+      priority: Priority.values.firstWhere((e) => e.toString() == 'Priority.' + (json['priority'] ?? 'normale')),
+      completed: json['completed'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'content': content,
+      'dueDate': dueDate.toIso8601String(),
+      'priority': priority.toString().split('.').last,
+      'completed': completed,
+    };
+  }
 
   @override
   String toString() {
-    return 'Task(id: $id, content: $content, completed: $completed, priority: $priority, tags: ${tags.length})';
+    return 'Task(id: $id, content: $content, completed: $completed, priority: $priority';
   }
 }

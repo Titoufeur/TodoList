@@ -3,31 +3,37 @@ import '../models/task.dart';
 import '../services/task_service.dart';
 
 class TasksProvider extends ChangeNotifier {
+  List<Task> _tasks = [];
   final TaskService _taskService = TaskService();
+
 //Met a jour les tâches et notifie les Consumers
   Future<void> fetchTasks() async {
-    _taskService.fetchTasks();
+    try {
+      _tasks = await _taskService.fetchTasks();
+      print('Tasks in provider: $_tasks');
+      notifyListeners();
+    } catch (e) {
+      print('Failed to fetch tasks: $e');
+    }
+  }
+
+  void addTask(Task task) async {
+    await _taskService.createTask(task);
     notifyListeners();
   }
 
-  Future<void> addTask(Task task) async {
-    _taskService.createTask(task);
+  void updateTask(Task updatedTask) async {
+    await _taskService.updateTask(updatedTask);
     notifyListeners();
   }
 
-  Future<void> updateTask(Task updatedTask) async {
-    _taskService.updateTask(updatedTask);
-    notifyListeners();
-  }
-
-  Future<void> removeTask(Task task) async {
-    _taskService.removeTask(task);
+  void removeTask(Task task) async {
+    await _taskService.removeTask(task);
     notifyListeners();
   }
 //Change l'état de complétion de la tache
-  Future<void> completeTask(Task task) async {
-    task.completed = !task.completed;
-    _taskService.updateTask(task);
+  void completeTask(Task task) async {
+    await _taskService.toggleTaskCompletion(task);
     notifyListeners();
   }
   //Trie par priorité
